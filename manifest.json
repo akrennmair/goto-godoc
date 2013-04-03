@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+
+  "name": "Goto GoDoc",
+  "description": "Open the currently selected page in godoc.org",
+  "version": "0.1",
+
+  "permissions": [ "tabs" ],
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_title": "Goto GoDoc"
+  },
+
+  "background": {
+     "scripts": [ "background.js" ]
+  }
+}

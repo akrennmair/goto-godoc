@@ -17,6 +17,21 @@ function transformGitHubURL(parsedURL) {
 	return 'http://' + godocHostname + '/' + parsedURL.hostname + pathname;
 }
 
+function transformBitBucketURL(parsedURL) {
+	var pathname = parsedURL.pathname;
+	var pos;
+	if (pathname.substring(pathname.length - 4) == '/src') {
+		pathname = pathname.substr(0, pathname.length - 4);
+	} else if ((pos = pathname.indexOf('/src/')) !== -1) {
+		var nextSlash = pathname.substr(pos + '/src/'.length).indexOf('/');
+		if (nextSlash == -1) {
+			nextSlash = pathname.substr(pos + '/src/'.length).length;
+		}
+		pathname = pathname.substr(0, pos) + pathname.substr(pos + '/src/'.length + nextSlash);
+	}
+	return 'http://' + godocHostname + '/' + parsedURL.hostname + pathname;
+}
+
 chrome.browserAction.onClicked.addListener(function() {
 	chrome.tabs.getSelected(null, function(tab) {
 		var newURL;
@@ -26,6 +41,8 @@ chrome.browserAction.onClicked.addListener(function() {
 		} else {
 			if (parsedURL.hostname == 'github.com' || parsedURL.hostname == 'www.github.com') {
 				newURL = transformGitHubURL(parsedURL)
+			} else if (parsedURL.hostname == 'bitbucket.org' || parsedURL.hostname == 'wwww.bitbucket.org') {
+				newURL = transformBitBucketURL(parsedURL);
 			} else {
 				newURL = 'http://' + godocHostname + '/' + parsedURL.hostname + parsedURL.pathname;
 			}

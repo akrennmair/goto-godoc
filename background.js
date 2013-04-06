@@ -63,6 +63,10 @@ function transformGoogleCodeURL(parsedURL) {
 	return 'http://' + godocHostname + '/' + parsedURL.hostname + pathname;
 }
 
+function transformLaunchpadURL(parsedURL) {
+	return 'http://' + godocHostname + '/' + parsedURL.hostname + parsedURL.pathname;
+}
+
 chrome.browserAction.onClicked.addListener(function() {
 	chrome.tabs.getSelected(null, function(tab) {
 		var newURL;
@@ -78,6 +82,9 @@ chrome.browserAction.onClicked.addListener(function() {
 				newURL = transformBitBucketURL(parsedURL);
 			} else if (parsedURL.hostname == 'code.google.com') {
 				newURL = transformGoogleCodeURL(parsedURL);
+			} else if (parsedURL.hostname == 'launchpad.net' || parsedURL.hostname == 'code.launchpad.net') {
+				parsedURL.hostname = 'launchpad.net';
+				newURL = transformLaunchpadURL(parsedURL);
 			} else {
 				newURL = 'http://' + godocHostname + '/' + parsedURL.hostname + parsedURL.pathname;
 			}

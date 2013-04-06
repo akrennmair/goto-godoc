@@ -71,8 +71,10 @@ chrome.browserAction.onClicked.addListener(function() {
 			newURL = 'http:/' + parsedURL.pathname;
 		} else {
 			if (parsedURL.hostname == 'github.com' || parsedURL.hostname == 'www.github.com') {
+				parsedURL.hostname = 'github.com';
 				newURL = transformGitHubURL(parsedURL)
 			} else if (parsedURL.hostname == 'bitbucket.org' || parsedURL.hostname == 'www.bitbucket.org') {
+				parsedURL.hostname = 'bitbucket.org';
 				newURL = transformBitBucketURL(parsedURL);
 			} else if (parsedURL.hostname == 'code.google.com') {
 				newURL = transformGoogleCodeURL(parsedURL);

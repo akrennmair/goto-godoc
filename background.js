@@ -32,6 +32,41 @@ function transformBitBucketURL(parsedURL) {
 	return 'http://' + godocHostname + '/' + parsedURL.hostname + pathname;
 }
 
+function transformGoogleCodeURL(parsedURL) {
+	var pathname = parsedURL.pathname;
+
+	var elems = pathname.substring(1).split('/');
+
+	var suffix = "";
+
+	if (parsedURL.search != null && parsedURL.search.length > 0) {
+		if (parsedURL.search.substr(0, '?repo='.length) == '?repo=') {
+			suffix = '.' + parsedURL.search.substr('?repo='.length);
+		}
+	}
+
+	if (elems.length >= 2) {
+		if (parsedURL.hash == null || parsedURL.hash.length == 0) {
+			pathname = '/p/' + elems[1] + suffix;
+		} else {
+			var pos;
+			parsedURL.hash = parsedURL.hash.split('%2F').join('/');
+			if ((pos = parsedURL.hash.indexOf('/')) !== -1) {
+				var additional = parsedURL.hash.substring(pos);
+				pathname = '/p/' + elems[1] + suffix + additional;
+			} else {
+				pathname = '/p/' + elems[1] + suffix;
+			}
+		}
+	}
+
+	return 'http://' + godocHostname + '/' + parsedURL.hostname + pathname;
+}
+
+function transformLaunchpadURL(parsedURL) {
+	return 'http://' + godocHostname + '/' + parsedURL.hostname + parsedURL.pathname;
+}
+
 chrome.browserAction.onClicked.addListener(function() {
 	chrome.tabs.getSelected(null, function(tab) {
 		var newURL;
@@ -40,9 +75,16 @@ chrome.browserAction.onClicked.addListener(function() {
 			newURL = 'http:/' + parsedURL.pathname;
 		} else {
 			if (parsedURL.hostname == 'github.com' || parsedURL.hostname == 'www.github.com') {
+				parsedURL.hostname = 'github.com';
 				newURL = transformGitHubURL(parsedURL)
-			} else if (parsedURL.hostname == 'bitbucket.org' || parsedURL.hostname == 'wwww.bitbucket.org') {
+			} else if (parsedURL.hostname == 'bitbucket.org' || parsedURL.hostname == 'www.bitbucket.org') {
+				parsedURL.hostname = 'bitbucket.org';
 				newURL = transformBitBucketURL(parsedURL);
+			} else if (parsedURL.hostname == 'code.google.com') {
+				newURL = transformGoogleCodeURL(parsedURL);
+			} else if (parsedURL.hostname == 'launchpad.net' || parsedURL.hostname == 'code.launchpad.net') {
+				parsedURL.hostname = 'launchpad.net';
+				newURL = transformLaunchpadURL(parsedURL);
 			} else {
 				newURL = 'http://' + godocHostname + '/' + parsedURL.hostname + parsedURL.pathname;
 			}

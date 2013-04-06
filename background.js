@@ -39,14 +39,14 @@ function transformGoogleCodeURL(parsedURL) {
 
 	var suffix = "";
 
-	if (parsedURL.search != null && parsedURL.search.length > 0) {
+	if (parsedURL.search !== null && parsedURL.search.length > 0) {
 		if (parsedURL.search.substr(0, '?repo='.length) == '?repo=') {
 			suffix = '.' + parsedURL.search.substr('?repo='.length);
 		}
 	}
 
 	if (elems.length >= 2) {
-		if (parsedURL.hash == null || parsedURL.hash.length == 0) {
+		if (parsedURL.hash === null || parsedURL.hash.length === 0) {
 			pathname = '/p/' + elems[1] + suffix;
 		} else {
 			var pos;
@@ -67,28 +67,41 @@ function transformLaunchpadURL(parsedURL) {
 	return 'http://' + godocHostname + '/' + parsedURL.hostname + parsedURL.pathname;
 }
 
+function transformGoDoc(parsedURL) {
+	return 'http:/' + parsedURL.pathname;
+}
+
+function transformOthers(parsedURL) {
+	return 'http://' + godocHostname + '/' + parsedURL.hostname + parsedURL.pathname;
+}
+
+var transformers = {
+	'code.google.com': transformGoogleCodeURL,
+	'github.com': transformGitHubURL,
+	'www.github.com': transformGitHubURL,
+	'bitbucket.org': transformBitBucketURL,
+	'www.bitbucket.org': transformBitBucketURL,
+	'launchpad.net': transformLaunchpadURL,
+	'code.launchpad.net': transformLaunchpadURL,
+	'godoc.org': transformGoDoc
+};
+
+var defaultHostnames = {
+	'www.bitbucket.org': 'bitbucket.org',
+	'code.launchpad.net': 'launchpad.net',
+	'www.github.com': 'github.com'
+};
+
 chrome.browserAction.onClicked.addListener(function() {
 	chrome.tabs.getSelected(null, function(tab) {
-		var newURL;
 		var parsedURL = parseURL(tab.url);
-		if (parsedURL.hostname == godocHostname) {
-			newURL = 'http:/' + parsedURL.pathname;
-		} else {
-			if (parsedURL.hostname == 'github.com' || parsedURL.hostname == 'www.github.com') {
-				parsedURL.hostname = 'github.com';
-				newURL = transformGitHubURL(parsedURL)
-			} else if (parsedURL.hostname == 'bitbucket.org' || parsedURL.hostname == 'www.bitbucket.org') {
-				parsedURL.hostname = 'bitbucket.org';
-				newURL = transformBitBucketURL(parsedURL);
-			} else if (parsedURL.hostname == 'code.google.com') {
-				newURL = transformGoogleCodeURL(parsedURL);
-			} else if (parsedURL.hostname == 'launchpad.net' || parsedURL.hostname == 'code.launchpad.net') {
-				parsedURL.hostname = 'launchpad.net';
-				newURL = transformLaunchpadURL(parsedURL);
-			} else {
-				newURL = 'http://' + godocHostname + '/' + parsedURL.hostname + parsedURL.pathname;
-			}
+		var transformFunc = transformers[parsedURL.hostname] || transformOthers;
+		var hostname = defaultHostnames[parsedURL.hostname];
+		if (hostname !== undefined) {
+			parsedURL.hostname = hostname;
 		}
+
+		var newURL = transformFunc(parsedURL);
 		chrome.tabs.create({ 'url': newURL });
 	});
 });

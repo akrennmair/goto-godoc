@@ -72,7 +72,7 @@ chrome.browserAction.onClicked.addListener(function() {
 		} else {
 			if (parsedURL.hostname == 'github.com' || parsedURL.hostname == 'www.github.com') {
 				newURL = transformGitHubURL(parsedURL)
-			} else if (parsedURL.hostname == 'bitbucket.org' || parsedURL.hostname == 'wwww.bitbucket.org') {
+			} else if (parsedURL.hostname == 'bitbucket.org' || parsedURL.hostname == 'www.bitbucket.org') {
 				newURL = transformBitBucketURL(parsedURL);
 			} else if (parsedURL.hostname == 'code.google.com') {
 				newURL = transformGoogleCodeURL(parsedURL);

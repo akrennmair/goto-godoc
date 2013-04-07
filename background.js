@@ -68,7 +68,46 @@ function transformLaunchpadURL(parsedURL) {
 }
 
 function transformGoDoc(parsedURL) {
-	return 'http:/' + parsedURL.pathname;
+	var elems = parsedURL.pathname.substring(1).split('/');
+	switch (elems[0]) {
+	case 'github.com':
+		var githubURL = 'https://github.com/' + elems[1] + '/' + elems[2];
+		if (elems.length > 3) {
+			githubURL += '/tree/master/' + elems.slice(3).join('/');
+		}
+		return githubURL;
+	case 'bitbucket.org':
+		var bbURL = 'https://bitbucket.org/' + elems[2] + '/' + elems[2];
+		if (elems.length > 3) {
+			// in order to build the URL for a subpackage, we'd need to know a revision
+			// number, which we can't guess. So we're out of luck. :-(
+		}
+		return bbURL;
+	case 'code.google.com':
+		var gcURL = 'https://code.google.com/p/';
+		var repo = null;
+		if (elems[2].indexOf('.') !== -1) {
+			repo = elems[2].split('.');
+			gcURL += repo[0];
+		}
+		if (elems.length > 3) {
+			gcURL += '/source/browse/';
+			if (repo !== null) {
+				gcURL += '?repo=' + repo[1];
+			}
+			// this assumes that it's a mercurial repository. Unfortunately, this is
+			// again something that we need to guess and can't derive from the URL.
+			gcURL += '#hg%2F' + elems.slice(3).join('%2F');
+		} else {
+			if (repo !== null) {
+				gcURL += '?repo=' + repo[1];
+			}
+		}
+		return gcURL;
+	case 'launchpad.net':
+	default:
+		return 'http:/' + parsedURL.pathname;
+	}
 }
 
 function transformOthers(parsedURL) {

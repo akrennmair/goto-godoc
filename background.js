@@ -67,6 +67,10 @@ function transformLaunchpadURL(parsedURL) {
 	return 'http://' + godocHostname + '/' + parsedURL.hostname + parsedURL.pathname;
 }
 
+function transformGolangURL(parsedURL) {
+	return 'http://' + godocHostname + '/' + parsedURL.pathname.substr(1).split('/').slice(1).join('/');
+}
+
 function transformGoDoc(parsedURL) {
 	var elems = parsedURL.pathname.substring(1).split('/');
 	switch (elems[0]) {
@@ -122,13 +126,15 @@ var transformers = {
 	'www.bitbucket.org': transformBitBucketURL,
 	'launchpad.net': transformLaunchpadURL,
 	'code.launchpad.net': transformLaunchpadURL,
+	'golang.org': transformGolangURL,
 	'godoc.org': transformGoDoc
 };
 
 var defaultHostnames = {
 	'www.bitbucket.org': 'bitbucket.org',
 	'code.launchpad.net': 'launchpad.net',
-	'www.github.com': 'github.com'
+	'www.github.com': 'github.com',
+	'tip.golang.org': 'golang.org'
 };
 
 chrome.browserAction.onClicked.addListener(function() {

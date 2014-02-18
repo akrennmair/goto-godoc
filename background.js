@@ -147,13 +147,10 @@ chrome.browserAction.onClicked.addListener(function() {
 		}
 
 		var newURL = transformFunc(parsedURL);
-		chrome.tabs.create({ 'url': newURL, 'active': false }, function(tab) {
-			chrome.tabs.query({ 'active': true, 'currentWindow': true }, function(oldTab) {
-				chrome.tabs.update(tab.id, { 'active': true });
-				if (oldTab.length > 0) {
-					chrome.tabs.move(tab.id, { 'index': oldTab[0].index + 1 });
-				}
-			});
+
+		chrome.tabs.query({ 'active': true, 'currentWindow': true }, function(oldTab) {
+			var idx = (oldTab.length > 0) ? (oldTab[0].index + 1) : -1;
+			chrome.tabs.create({ 'url': newURL, 'index': idx });
 		});
 	});
 });

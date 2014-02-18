@@ -3,7 +3,7 @@
 
   "name": "Goto GoDoc",
   "description": "Open the currently selected page in godoc.org",
-  "version": "0.5",
+  "version": "0.6",
 
   "permissions": [ "tabs" ],
 

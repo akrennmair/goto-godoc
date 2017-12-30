@@ -137,20 +137,27 @@ var defaultHostnames = {
 	'tip.golang.org': 'golang.org'
 };
 
-chrome.browserAction.onClicked.addListener(function() {
-	chrome.tabs.getSelected(null, function(tab) {
-		var parsedURL = parseURL(tab.url);
-		var transformFunc = transformers[parsedURL.hostname] || transformOthers;
-		var hostname = defaultHostnames[parsedURL.hostname];
-		if (hostname !== undefined) {
-			parsedURL.hostname = hostname;
-		}
+var isChrome = typeof chrome != "undefined";
+var browser = isChrome ? chrome : browser;
 
-		var newURL = transformFunc(parsedURL);
+function openGodocNewTab(tabs) {
+	var parsedURL = parseURL(tabs[0].url);
+	var transformFunc = transformers[parsedURL.hostname] || transformOthers;
+	var hostname = defaultHostnames[parsedURL.hostname];
+	if (hostname !== undefined) {
+		parsedURL.hostname = hostname;
+	}
 
-		chrome.tabs.query({ 'active': true, 'currentWindow': true }, function(oldTab) {
-			var idx = (oldTab.length > 0) ? (oldTab[0].index + 1) : -1;
-			chrome.tabs.create({ 'url': newURL, 'index': idx });
-		});
-	});
+	var newURL = transformFunc(parsedURL);
+	var idx = (tabs.length > 0) ? (tabs[0].index + 1) : -1;
+	browser.tabs.create({ 'url': newURL, 'index': idx });
+}
+
+browser.browserAction.onClicked.addListener(function() {
+	var query = { 'active': true, 'currentWindow': true };
+	if (isChrome) {
+		chrome.tabs.query(query, openGodocNewTab)
+	} else {
+		browser.tabs.query(query).then(openGodocNewTab)
+	}
 });

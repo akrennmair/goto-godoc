@@ -1,4 +1,4 @@
-var godocHostname = 'godoc.org';
+var godocHostname = 'pkg.go.dev';
 
 function parseURL(url) {
 	var parser = document.createElement('a');
@@ -127,7 +127,8 @@ var transformers = {
 	'launchpad.net': transformLaunchpadURL,
 	'code.launchpad.net': transformLaunchpadURL,
 	'golang.org': transformGolangURL,
-	'godoc.org': transformGoDoc
+	'godoc.org': transformGoDoc,
+	'pkg.go.dev': transformGoDoc
 };
 
 var defaultHostnames = {

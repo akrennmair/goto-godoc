@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "Goto GoDoc",
-  "description": "Open the currently selected page in godoc.org",
+  "description": "Open the currently selected page in pkg.go.dev",
   "version": "0.6.1",
 
   "permissions": [ "tabs" ],

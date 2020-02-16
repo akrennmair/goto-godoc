@@ -3,7 +3,7 @@
 
   "name": "Goto GoDoc",
   "description": "Open the currently selected page in pkg.go.dev",
-  "version": "0.6.1",
+  "version": "0.7",
 
   "permissions": [ "tabs" ],
 

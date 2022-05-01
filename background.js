@@ -1,11 +1,5 @@
 var godocHostname = 'pkg.go.dev';
 
-function parseURL(url) {
-	var parser = document.createElement('a');
-	parser.href = url;
-	return parser;
-}
-
 function transformGitHubURL(parsedURL) {
 	var pathname = parsedURL.pathname;
 	var pos;
@@ -110,12 +104,12 @@ function transformGoDoc(parsedURL) {
 		return gcURL;
 	case 'launchpad.net':
 	default:
-		return 'http:/' + parsedURL.pathname;
+		return 'http://' + parsedURL.pathname;
 	}
 }
 
 function transformOthers(parsedURL) {
-	return 'http://' + godocHostname + '/' + parsedURL.hostname + parsedURL.pathname;
+	return 'http://' + godocHostname + '/search?q=' + parsedURL.hostname + parsedURL.pathname;
 }
 
 var transformers = {
@@ -138,20 +132,22 @@ var defaultHostnames = {
 	'tip.golang.org': 'golang.org'
 };
 
-chrome.browserAction.onClicked.addListener(function() {
-	chrome.tabs.getSelected(null, function(tab) {
-		var parsedURL = parseURL(tab.url);
-		var transformFunc = transformers[parsedURL.hostname] || transformOthers;
-		var hostname = defaultHostnames[parsedURL.hostname];
-		if (hostname !== undefined) {
-			parsedURL.hostname = hostname;
-		}
+chrome.action.onClicked.addListener(async (tab) => {
+	if (tab.url.includes("chrome://")) {
+		return
+	}
 
-		var newURL = transformFunc(parsedURL);
+	var parsedURL = new URL(tab.url);
+	var transformFunc = transformers[parsedURL.hostname] || transformOthers;
+	var hostname = defaultHostnames[parsedURL.hostname];
+	if (hostname !== undefined) {
+		parsedURL.hostname = hostname;
+	}
 
-		chrome.tabs.query({ 'active': true, 'currentWindow': true }, function(oldTab) {
-			var idx = (oldTab.length > 0) ? (oldTab[0].index + 1) : -1;
-			chrome.tabs.create({ 'url': newURL, 'index': idx });
-		});
+	var newURL = transformFunc(parsedURL);
+
+	chrome.tabs.query({ 'active': true, 'currentWindow': true }, function(oldTab) {
+		var idx = (oldTab.length > 0) ? (oldTab[0].index + 1) : -1;
+		chrome.tabs.create({ 'url': newURL, 'index': idx });
 	});
 });

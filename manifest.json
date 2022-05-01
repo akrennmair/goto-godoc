@@ -1,9 +1,9 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
 
   "name": "Goto GoDoc",
   "description": "Open the currently selected page in pkg.go.dev",
-  "version": "0.7",
+  "version": "0.8",
 
   "permissions": [ "tabs" ],
 
@@ -13,12 +13,13 @@
     "128": "icon128.png"
   },
 
-  "browser_action": {
+  "action": {
     "default_icon": "icon128.png",
     "default_title": "Goto GoDoc"
   },
 
   "background": {
-     "scripts": [ "background.js" ]
+     "service_worker": "background.js",
+     "type": "module"
   }
 }
